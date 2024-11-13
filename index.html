@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #be2e82;
+            color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .messages {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .message.user {
+            background-color: #e7f3ff;
+            text-align: right;
+        }
+        .message.server {
+            background-color: #f1f1f1;
+            text-align: left;
+        }
+
+        .message-form {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .send-btn {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1em;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .send-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">Secure Chat</div>
+        <div class="messages" id="messages">
+            {% for message in messages %}
+                <div class="message {% if 'You' in message %}user{% else %}server{% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        <form class="message-form" method="POST">
+            <input type="text" name="message" class="message-input" placeholder="Enter your message" required>
+            <button type="submit" class="send-btn">Send</button>
+        </form>
+    </div>
+
+    <script>
+        // Polling to check for new messages
+        function fetchMessages() {
+            fetch('/get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    const messagesContainer = document.getElementById('messages');
+                    messagesContainer.innerHTML = ''; // Clear previous messages
+                    data.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('message');
+                        if (message.includes('You:')) {
+                            messageElement.classList.add('user');
+                        } else {
+                            messageElement.classList.add('server');
+                        }
+                        messageElement.textContent = message;
+                        messagesContainer.appendChild(messageElement);
+                    });
+                });
+        }
+
+        // Poll every 2 seconds to update the chat
+        setInterval(fetchMessages, 2000);
+    </script>
+</body>
+</html>
