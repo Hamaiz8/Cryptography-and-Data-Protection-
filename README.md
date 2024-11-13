@@ -347,3 +347,14 @@ if _name_ == "_main_":
     </script>
 </body>
 </html>
+
+
+
+
+
+# Execution steps:
+1.	Save index.html to a folder named “templates”.
+2.	Open one terminal and run app.py, you’ll get a link that will direct you to local host.
+3.	Open another terminal and run client.py
+
+
